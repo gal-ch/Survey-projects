@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+
+    <title>Social Auth with Django</title>
+</head>
+<body>
+<!-- nav bar -->
+<div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#">Account setting</a>
+                </li>
+                <div class="userIteam">
+                    <li class="userNav">
+                        <a class="nav-link disabled-user" href="#">Welcome {{ user.username }}</a>
+                    </li>
+                </div>
+            </ul>
+
+        </div>
+
+
+    </nav>
+</div>
+<div class="container-fluid">
+
+    <div>
+        <h1 class="text-white text-center">{% block title %}{% endblock %}</h1>
+        <div class="card p-5">
+
+            {% block content %}
+                {% block contentcalendar %}
+                {% endblock %}
+            {% endblock %}
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Footer -->
+<footer class="page-footer font-small stylish-color-dark pt-4">
+    <!-- Footer Links -->
+    <div class="container text-center text-md-left">
+        <!-- Grid row -->
+        <div class="row">
+            <!-- Grid column -->
+            <div class="col-md-4 mx-auto">
+                <!-- Content -->
+                <h5 class="font-weight-bold text-uppercase mt-3 mb-4"></h5>
+                <p>
+                    Imagine that there is very, very important content here, one that will split your life in two.
+                    Are you done? Excellent! Please share it with us, we would love to know what content is so
+                    important..</p>
+            </div>
+            <!-- Grid column -->
+            <hr class="clearfix w-100 d-md-none">
+            <!-- Grid column -->
+            <div class="col-md-2 mx-auto">
+
+                <!-- Links -->
+                <h5 class="font-weight-bold text-uppercase mt-3 mb-4"></h5>
+
+                <ul class="list-unstyled">
+                    <li>
+                        <a href="#!">surprise</a>
+                    </li>
+                    <li>
+                        <a href='#'>home</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- Grid column -->
+            <hr class="clearfix w-100 d-md-none">
+
+            <!-- Grid column -->
+            <div class="col-md-2 mx-auto">
+
+                <!-- Links -->
+                <h5 class="font-weight-bold text-uppercase mt-3 mb-4"></h5>
+
+                <ul class="list-unstyled">
+                    <li>
+                        <a href="#!">about us</a>
+                    </li>
+                    <li>
+                        <a href="#!">search</a>
+                    </li>
+                    <li>
+                </ul>
+
+            </div>
+        </div>
+
+        <hr>
+
+    </div>
+    <!-- Copyright -->
+</footer>
+<!-- Footer -->
+
+
+</body>
+</html>
