@@ -1,20 +1,11 @@
 # signup -> verficatiion email-> create profile
 # social signup -> create profile
-
-from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
-from django.views.generic import View, UpdateView, TemplateView
+from django.http import Http404
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy, reverse
+from django.views.generic import View, UpdateView, TemplateView, DetailView
 from .forms import SignUpForm, ProfileForm
-from django.contrib import messages
-from django.contrib.sites.shortcuts import get_current_site
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
-from django.template.loader import render_to_string
-from .tokens import account_activation_token
-from django.contrib.auth import login
-from django.contrib.auth.models import User
-from django.utils.encoding import force_text
-from django.utils.http import urlsafe_base64_decode
+from .models import MyUser
 
 
 class HomePageView(TemplateView):
@@ -33,52 +24,62 @@ class SignUpView(View):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
         if form.is_valid():
-
             user = form.save(commit=False)
-            user.is_active = False
+            user.is_active = True
             user.save()
 
-            current_site = get_current_site(request)
-            subject = 'Activate Your MySite Account'
-            message = render_to_string('emails/account_activation_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': account_activation_token.make_token(user),
-            })
-            user.email_user(subject, message)
+            # current_site = get_current_site(request)
+            # subject = 'Activate Your MySite Account'
+            # message = render_to_string('emails/account_activation_email.html', {
+            #     'user': user,
+            #     'domain': current_site.domain,
+            #     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            #     'token': account_activation_token.make_token(user),
+            # })
+            # user.email_user(subject, message)
 
-            messages.success(request, ('Please Confirm your email to complete registration.'))
+            # messages.success(request, ('Please Confirm your email to complete registration.'))
 
-            return redirect('login')
+           # return redirect('login')
+            return redirect('accounts:profile-create', pk=user.id)
 
         return render(request, self.template_name, {'form': form})
 
 
-class ActivateAccount(View):
-    def get(self, request, uidb64, token, *args, **kwargs):
-        try:
-            uid = force_text(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            user = None
+# class ActivateAccount(View):
+#     def get(self, request, uidb64, token, *args, **kwargs):
+#         try:
+#             uid = force_text(urlsafe_base64_decode(uidb64))
+#             user = User.objects.get(pk=uid)
+#         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+#             user = None
+#
+#         if user is not None and account_activation_token.check_token(user, token):
+#             user.is_active = True
+#             user.profile.email_confirmed = True
+#             user.save()
+#             login(request, user)
+#             messages.success(request, ('Your account have been confirmed.'))
+#             return redirect('accounts:profile', pk=user.pk)
+#         else:
+#             messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
+#             return redirect('accounts:home')
 
-        if user is not None and account_activation_token.check_token(user, token):
-            user.is_active = True
-            user.profile.email_confirmed = True
-            user.save()
-            login(request, user)
-            messages.success(request, ('Your account have been confirmed.'))
-            return redirect('accounts:home')
-        else:
-            messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
-            return redirect('accounts:home')
 
-
-class ProfileView(UpdateView):
-    model = User
+class ProfileUpdateView(UpdateView):
+    model = MyUser
     form_class = ProfileForm
-    success_url = reverse_lazy('accounts:home')
+    success_url = 'accounts:home'
     template_name = 'accounts/profile.html'
 
+    def get_success_url(self):
+        return reverse_lazy('accounts:profile-detail', kwargs={'pk': self.object.pk})
 
+
+class ProfileDetailView(DetailView):
+    model = MyUser
+    template_name = 'accounts/profile_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileDetailView, self).get_context_data(**kwargs)
+        return context
