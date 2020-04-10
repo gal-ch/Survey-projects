@@ -42,6 +42,13 @@ class MyUserManager(BaseUserManager):
         return user
 
 
+GENDER_CHOICES = (
+    (0, 'male'),
+    (1, 'female'),
+    (2, 'not specified'),
+)
+
+
 class MyUser(AbstractBaseUser):
     email = models.EmailField(
         verbose_name='email address',
@@ -53,7 +60,7 @@ class MyUser(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     bio = models.TextField(max_length=500)
-    gender = models.CharField(max_length=50)
+    gender = models.IntegerField(choices=GENDER_CHOICES, default=2)
     city = models.CharField(max_length=50)
     # avatar = models.ImageField(blank=True, upload_to=generate_new_filename, default="avatar/default.jpg")
 

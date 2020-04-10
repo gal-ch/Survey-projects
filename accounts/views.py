@@ -1,5 +1,6 @@
 # signup -> verficatiion email-> create profile
 # social signup -> create profile
+from django.contrib.auth import login
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
@@ -23,10 +24,13 @@ class SignUpView(View):
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
+        # user = self.get_object()
         if form.is_valid():
             user = form.save(commit=False)
+            print('user', user)
             user.is_active = True
             user.save()
+            login(request, user)
 
             # current_site = get_current_site(request)
             # subject = 'Activate Your MySite Account'
@@ -41,7 +45,7 @@ class SignUpView(View):
             # messages.success(request, ('Please Confirm your email to complete registration.'))
 
            # return redirect('login')
-            return redirect('accounts:profile-create', pk=user.id)
+            return redirect('accounts:profile-create', pk=user.pk)
 
         return render(request, self.template_name, {'form': form})
 
@@ -69,11 +73,17 @@ class SignUpView(View):
 class ProfileUpdateView(UpdateView):
     model = MyUser
     form_class = ProfileForm
-    success_url = 'accounts:home'
     template_name = 'accounts/profile.html'
 
-    def get_success_url(self):
-        return reverse_lazy('accounts:profile-detail', kwargs={'pk': self.object.pk})
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.pk == self.get_object().pk:
+            return super(ProfileUpdateView, self).dispatch(request, *args, **kwargs)
+        return redirect(reverse('accounts:home'))
+
+    def get_success_url(self, **kwargs):
+        print(self.object.pk)
+        if kwargs != None:
+            return reverse_lazy('accounts:profile-detail', kwargs={'pk': self.object.pk})
 
 
 class ProfileDetailView(DetailView):

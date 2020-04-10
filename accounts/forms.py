@@ -14,6 +14,7 @@ class SignUpForm(UserCreationForm):
 
 
 class ProfileForm(forms.ModelForm):
+    # date_of_birth = forms.DateField(input_formats=['%d/%m/%Y %H:%M'])
     class Meta:
         model = MyUser
         fields = ('email', 'city', 'date_of_birth',  'bio', 'username', 'gender')
