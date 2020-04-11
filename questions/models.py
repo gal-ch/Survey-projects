@@ -1,5 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+
+from accounts.models import MyUser
+
 User = get_user_model()
 
 class Question(models.Model):
@@ -31,7 +34,7 @@ LEVELS = (
 
 
 class UserAnswer(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     my_answer = models.ForeignKey(Answer, related_name='user_answer', on_delete=models.CASCADE)
     my_answer_importance = models.CharField(max_length=50, choices=LEVELS)

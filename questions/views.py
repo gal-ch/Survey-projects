@@ -3,8 +3,10 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import ListView, FormView, DetailView
 from django.views.generic.edit import FormMixin
+
+from accounts.models import MyUser
 from questions.forms import UserResponseForm
-from questions.models import Question, Answer
+from questions.models import Question, Answer, UserAnswer
 
 
 class QuestionDetailView(FormMixin, DetailView):
@@ -20,6 +22,7 @@ class QuestionDetailView(FormMixin, DetailView):
         # if not request.user.is_authenticated:
         #     return HttpResponseForbidden()
         self.object = self.get_object()
+
         form = self.get_form()
         if form.is_valid():
             return self.form_valid(form)
@@ -27,7 +30,14 @@ class QuestionDetailView(FormMixin, DetailView):
             return self.form_invalid(form)
 
     def form_valid(self, form):
+        print('user', self.request.user.pk)
+        new_ans_to_user = UserAnswer()
         ans = form.cleaned_data['answer_id']
+        qu = form.cleaned_data['question_id']
+        new_ans_to_user.user = MyUser.objects.get(pk=self.request.user.pk)
+        new_ans_to_user.my_answer = Answer.objects.get(id=ans)
+        new_ans_to_user.question = Question.objects.get(id=qu)
+        new_ans_to_user.save()
         print(ans)
         return super().form_valid(form)
 
