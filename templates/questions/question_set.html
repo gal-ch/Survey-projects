@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Question Form{% endblock %}
+{% block content %}
+
+  <form method="post" action="">
+  <h1>{{ object.text }}</h1>
+      <input type="hidden" name="question_id" value="{{ object.id }}"/>
+      {% for ans in object.answer_set.all %}
+          <input type="radio" name="answer_id" value="{{ ans.id }}"/>{{ ans.text }}<br/>
+      {% endfor %}
+  {{ form.importance_level }}
+   {% csrf_token %}
+   <button type="submit">Submit</button>
+  </form>
+
+{% endblock %}
