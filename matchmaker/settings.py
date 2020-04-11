@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
 ]
 
 MIDDLEWARE = [
@@ -153,7 +154,7 @@ STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'accounts.MyUser'
 
-SITE_ID = 1
+SITE_ID = 3
 
 # allauth configuration
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
@@ -162,3 +163,35 @@ ACCOUNT_USERNAME_REQUIRED = True
 SOCIALACCOUNT_QUERY_EMAIL = ACCOUNT_EMAIL_REQUIRED
 ACCOUNT_ADAPTER = 'accounts.adapter.MyAccountAdapter'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+
+from .secrets import SOCIAL_AUTH_FACEBOOK_KEY, SOCIAL_AUTH_FACEBOOK_SECRET
+SOCIALACCOUNT_PROVIDERS = {
+    'facebook': {
+        'METHOD': 'oauth2',
+        'SCOPE': ['email', 'public_profile', 'user_friends', 'user_birthday', 'user_link'],
+        'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+        'INIT_PARAMS': {'cookie': True},
+        'FIELDS': [
+            'id',
+            'email',
+            'name',
+            'first_name',
+            'last_name',
+            'verified',
+            'locale',
+            'timezone',
+            'link',
+            'gender',
+            'birthday',
+            'picture',
+            'updated_time',
+            'friends',
+        ],
+        'EXCHANGE_TOKEN': True,
+        'LOCALE_FUNC': lambda request: 'en_US',
+        'VERIFIED_EMAIL': True,
+        'VERSION': 'v2.4'
+    },
+
+}
