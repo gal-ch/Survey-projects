@@ -62,6 +62,7 @@ class MyUser(AbstractBaseUser):
     bio = models.TextField(max_length=500)
     gender = models.IntegerField(choices=GENDER_CHOICES, default=2)
     city = models.CharField(max_length=50)
+    hasProfile = models.BooleanField(default=False)
     # avatar = models.ImageField(blank=True, upload_to=generate_new_filename, default="avatar/default.jpg")
 
     objects = MyUserManager()

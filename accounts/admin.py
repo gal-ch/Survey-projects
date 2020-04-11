@@ -5,11 +5,11 @@ from accounts.models import MyUser
 
 
 class UserAdmin(BaseUserAdmin):
-    list_display = ('email', 'is_admin', 'gender', 'city', 'bio')
+    list_display = ('email','username', 'is_admin', 'gender', 'city', 'bio', 'hasProfile')
     list_filter = ('is_admin',)
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('date_of_birth', 'gender', 'city', 'bio')}),
+        ('Personal info', {'fields': ('date_of_birth', 'gender', 'city', 'bio', 'hasProfile')}),
         ('Permissions', {'fields': ('is_admin',)}),
     )
 

@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+# from django.contrib.auth.base_user import AbstractBaseUser
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -37,9 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'questions.apps.QuestionsConfig',
     'accounts',
+
     'six',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 ]
 
 MIDDLEWARE = [
@@ -66,10 +73,24 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+
             ],
         },
     },
 ]
+
+
+AUTHENTICATION_BACKENDS = (
+
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+
+)
+
 
 WSGI_APPLICATION = 'matchmaker.wsgi.application'
 
@@ -128,6 +149,16 @@ STATIC_URL = '/static/'
 # from .secrets import EMAIL_HOST_PASSWORD
 # EMAIL_PORT = 587
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-LOGIN_REDIRECT_URL = 'accounts:home'
+# LOGIN_REDIRECT_URL = 'home'
 
 AUTH_USER_MODEL = 'accounts.MyUser'
+
+SITE_ID = 1
+
+# allauth configuration
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True
+SOCIALACCOUNT_QUERY_EMAIL = ACCOUNT_EMAIL_REQUIRED
+ACCOUNT_ADAPTER = 'accounts.adapter.MyAccountAdapter'
+ACCOUNT_EMAIL_VERIFICATION = 'none'

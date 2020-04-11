@@ -1,12 +1,22 @@
 # signup -> verficatiion email-> create profile
 # social signup -> create profile
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
+from django.utils.decorators import method_decorator
 from django.views.generic import View, UpdateView, TemplateView, DetailView
 from .forms import SignUpForm, ProfileForm
 from .models import MyUser
+
+
+class LoginRequireMixin(object):
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.has_profile == False:
+            return redirect('accounts:profile-create', pk=request.user.pk)
+        return super(LoginRequireMixin, self).dispatch(request, *args, **kwargs)
 
 
 class HomePageView(TemplateView):
@@ -31,43 +41,8 @@ class SignUpView(View):
             user.is_active = True
             user.save()
             login(request, user)
-
-            # current_site = get_current_site(request)
-            # subject = 'Activate Your MySite Account'
-            # message = render_to_string('emails/account_activation_email.html', {
-            #     'user': user,
-            #     'domain': current_site.domain,
-            #     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-            #     'token': account_activation_token.make_token(user),
-            # })
-            # user.email_user(subject, message)
-
-            # messages.success(request, ('Please Confirm your email to complete registration.'))
-
-           # return redirect('login')
             return redirect('accounts:profile-create', pk=user.pk)
-
         return render(request, self.template_name, {'form': form})
-
-
-# class ActivateAccount(View):
-#     def get(self, request, uidb64, token, *args, **kwargs):
-#         try:
-#             uid = force_text(urlsafe_base64_decode(uidb64))
-#             user = User.objects.get(pk=uid)
-#         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-#             user = None
-#
-#         if user is not None and account_activation_token.check_token(user, token):
-#             user.is_active = True
-#             user.profile.email_confirmed = True
-#             user.save()
-#             login(request, user)
-#             messages.success(request, ('Your account have been confirmed.'))
-#             return redirect('accounts:profile', pk=user.pk)
-#         else:
-#             messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
-#             return redirect('accounts:home')
 
 
 class ProfileUpdateView(UpdateView):
@@ -85,10 +60,22 @@ class ProfileUpdateView(UpdateView):
         if kwargs != None:
             return reverse_lazy('accounts:profile-detail', kwargs={'pk': self.object.pk})
 
+    def form_valid(self, form):
+        form.instance.hasProfile = True
+        print(self.object.hasProfile)
+        instance = form.save()
+        self.success_url = reverse('accounts:profile-detail', kwargs={'pk': instance.pk})
+        return super(ProfileUpdateView, self).form_valid(form)
+
 
 class ProfileDetailView(DetailView):
     model = MyUser
     template_name = 'accounts/profile_detail.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.hasProfile and request.user.is_authenticated:
+            return super(ProfileDetailView, self).dispatch(request, *args, **kwargs)
+        return redirect('accounts:profile-create', pk=request.user.pk)
 
     def get_context_data(self, **kwargs):
         context = super(ProfileDetailView, self).get_context_data(**kwargs)
