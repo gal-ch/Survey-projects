@@ -9,6 +9,18 @@ from questions.forms import UserResponseForm
 from questions.models import Question, Answer, UserAnswer
 
 
+
+from django.http import Http404
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.views.generic import ListView, FormView, DetailView
+from django.views.generic.edit import FormMixin
+
+from accounts.models import MyUser
+from questions.forms import UserResponseForm
+from questions.models import Question, Answer, UserAnswer
+
+
 class QuestionDetailView(FormMixin, DetailView):
     template_name = "questions/question_set.html"
     model = Question
@@ -31,14 +43,22 @@ class QuestionDetailView(FormMixin, DetailView):
 
     def form_valid(self, form):
         print('user', self.request.user.pk)
-        new_ans_to_user = UserAnswer()
-        ans = form.cleaned_data['answer_id']
-        qu = form.cleaned_data['question_id']
-        new_ans_to_user.user = MyUser.objects.get(pk=self.request.user.pk)
-        new_ans_to_user.my_answer = Answer.objects.get(id=ans)
-        new_ans_to_user.question = Question.objects.get(id=qu)
-        new_ans_to_user.save()
-        print(ans)
+        ans_user = UserAnswer()
+        question_id = form.cleaned_data.get('question_id')
+        user_answer_id = form.cleaned_data.get('answer_id')
+        user_importance_level = form.cleaned_data.get('user_importance_level')
+        other_user_answer_id = form.cleaned_data.get('other_user_answer_id')
+        other_user_importance_level = form.cleaned_data.get('other_user_importance_level')
+        ans_user.user = MyUser.objects.get(pk=self.request.user.pk)
+        ans_user.question = Question.objects.get(id=question_id)
+        ans_user.user_answer = Answer.objects.get(id=user_answer_id)
+        ans_user.user_importance_level = user_importance_level
+        if other_user_answer_id != -1:
+            ans_user.other_user_answer = Answer.objects.get(id=other_user_answer_id)
+            ans_user.other_user_importance_level = other_user_importance_level
+        else:
+            ans_user.other_user_importance_level = 'Not important'
+        ans_user.save()
         return super().form_valid(form)
 
 

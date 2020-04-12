@@ -25,6 +25,7 @@ class Answer(models.Model):
     def __str__(self):
         return self.text[:10]
 
+
 LEVELS = (
     ('Mandatory', 'Mandatory'),
     ('Very important', 'Very important'),
@@ -36,9 +37,9 @@ LEVELS = (
 class UserAnswer(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    my_answer = models.ForeignKey(Answer, related_name='user_answer', on_delete=models.CASCADE)
-    my_answer_importance = models.CharField(max_length=50, choices=LEVELS)
+    user_answer = models.ForeignKey(Answer, related_name='user_answer', on_delete=models.CASCADE)
+    user_importance_level = models.CharField(max_length=50, choices=LEVELS)
     other_user_answer = models.ForeignKey(Answer, null=True, blank=True, related_name='match_answer', on_delete=models.CASCADE)
-    other_user_importance = models.CharField(max_length=50, choices=LEVELS)
+    other_user_importance_level = models.CharField(max_length=50, choices=LEVELS)
     timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
 

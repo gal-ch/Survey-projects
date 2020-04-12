@@ -53,7 +53,7 @@ class ProfileUpdateView(UpdateView):
     def dispatch(self, request, *args, **kwargs):
         if request.user.pk == self.get_object().pk:
             return super(ProfileUpdateView, self).dispatch(request, *args, **kwargs)
-        return redirect(reverse('accounts:home'))
+        return redirect(reverse('home'))
 
     def get_success_url(self, **kwargs):
         print(self.object.pk)

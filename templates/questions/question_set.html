@@ -1,16 +1,25 @@
 {% extends 'base.html' %}
 {% block title %}Question Form{% endblock %}
 {% block content %}
+    <form method="post" action="" xmlns="http://www.w3.org/1999/html">{% csrf_token %}
+        {{ form.errors }}
 
-  <form method="post" action="">
-  <h1>{{ object.text }}</h1>
-      <input type="hidden" name="question_id" value="{{ object.id }}"/>
-      {% for ans in object.answer_set.all %}
-          <input type="radio" name="answer_id" value="{{ ans.id }}"/>{{ ans.text }}<br/>
-      {% endfor %}
-  {{ form.importance_level }}
-   {% csrf_token %}
-   <button type="submit">Submit</button>
-  </form>
+        <h1>{{ object.text }}</h1>
+        <h1>Your Answer</h1>
+        <input type="hidden" name="question_id" value="{{ object.id }}"/>{{ object.id }}<br/>
+        {% for ans in object.answer_set.all %}
+            <input type="radio" name="answer_id" value="{{ ans.id }}"/>{{ ans.text }}{{ ans.id }}<br/>
+        {% endfor %}
+        is this importance? {{ form.user_importance_level }}
+
+        <h1>Other People Answer</h1>
+        {% for ans in object.answer_set.all %}
+            <input type="radio" name="other_user_answer_id" value="{{ ans.id }}"/>{{ ans.text }}{{ ans.id }}<br/>
+        {% endfor %}
+        <input type="radio" name="other_user_answer_id" value="-1"/>that not important<br/>
+        is this importance? {{ form.other_user_importance }}
+
+        <input type="submit" value="Submit">
+    </form>
 
 {% endblock %}
