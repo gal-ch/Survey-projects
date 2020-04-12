@@ -27,14 +27,21 @@ class QuestionDetailView(FormMixin, DetailView):
     form_class = UserResponseForm
 
     def get_success_url(self):
-        next_question = Question.objects.all().order_by('-timestemp').first()
-        return reverse('question', kwargs={'pk': next_question.pk})
+        current_question = self.get_object().pk
+        next_question = current_question + 1
+        return reverse('question', kwargs={'pk': next_question})
+
+    def get_context_data(self, **kwargs):
+        context = super(QuestionDetailView, self).get_context_data(**kwargs)
+        try:
+            context['user_ans_prv'] = UserAnswer.objects.get(user=self.request.user, question=self.object)
+        except UserAnswer.DoesNotExist:
+            context['user_ans_prv'] = None
+        except UserAnswer.MultipleObjectsReturned:
+            context['user_ans_prv'] = UserAnswer.objects.filter(user=self.request.user, question=self.object)[0]
+        return context
 
     def post(self, request, *args, **kwargs):
-        # if not request.user.is_authenticated:
-        #     return HttpResponseForbidden()
-        self.object = self.get_object()
-
         form = self.get_form()
         if form.is_valid():
             return self.form_valid(form)
@@ -42,7 +49,7 @@ class QuestionDetailView(FormMixin, DetailView):
             return self.form_invalid(form)
 
     def form_valid(self, form):
-        print('user', self.request.user.pk)
+        # to fix - i saved it twice
         ans_user = UserAnswer()
         question_id = form.cleaned_data.get('question_id')
         user_answer_id = form.cleaned_data.get('answer_id')
@@ -57,6 +64,7 @@ class QuestionDetailView(FormMixin, DetailView):
             ans_user.other_user_answer = Answer.objects.get(id=other_user_answer_id)
             ans_user.other_user_importance_level = other_user_importance_level
         else:
+            ans_user.other_user_answer = None
             ans_user.other_user_importance_level = 'Not important'
         ans_user.save()
         return super().form_valid(form)

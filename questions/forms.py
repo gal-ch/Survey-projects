@@ -7,7 +7,7 @@ class UserResponseForm(forms.Form):
     answer_id = forms.IntegerField()
     user_importance_level = forms.ChoiceField(choices=LEVELS)
     other_user_answer_id = forms.IntegerField()
-    other_user_importance = forms.ChoiceField(choices=LEVELS)
+    other_user_importance_level = forms.ChoiceField(choices=LEVELS)
 
     def clean_question_id(self):
         question_id = self.cleaned_data.get('question_id')
