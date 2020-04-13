@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'questions.apps.QuestionsConfig',
     'accounts',
+    'matches',
 
     'six',
     'allauth',

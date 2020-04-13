@@ -1,21 +1,6 @@
-from django.http import Http404
-from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.generic import ListView, FormView, DetailView
 from django.views.generic.edit import FormMixin
-
-from accounts.models import MyUser
-from questions.forms import UserResponseForm
-from questions.models import Question, Answer, UserAnswer
-
-
-
-from django.http import Http404
-from django.shortcuts import render, redirect
-from django.urls import reverse
-from django.views.generic import ListView, FormView, DetailView
-from django.views.generic.edit import FormMixin
-
 from accounts.models import MyUser
 from questions.forms import UserResponseForm
 from questions.models import Question, Answer, UserAnswer
