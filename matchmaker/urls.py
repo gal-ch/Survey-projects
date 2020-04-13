@@ -4,12 +4,16 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 import accounts
 from accounts.views import HomePageView
+from matches.views import chack
 from questions.views import QuestionDetailView
 
 urlpatterns = [
     path('home/', HomePageView.as_view(), name='home'),
+    path('gal/', chack, name='chack'),
     path('question/<int:pk>/', QuestionDetailView.as_view(), name='question'),
     path('admin/', admin.site.urls),
+
+
 
     path('', include('accounts.urls')),
     url(r'^accounts/', include('allauth.urls')),

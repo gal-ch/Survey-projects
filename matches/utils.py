@@ -6,19 +6,22 @@ users = User.objects.all()
 all_user_answers = UserAnswer.objects.all().order_by("user__id")
 
 
-def get_match(user_a, user_b):
+def get_points(user_a, user_b):
     a_answers = UserAnswer.objects.filter(user=user_a)
     b_answers = UserAnswer.objects.filter(user=user_b)
     a_total_awarded = 0
     a_points_possible = 0
     num_question = 0
     for a in a_answers:
+        print('a:', a)
+        print('b_answers:', b_answers)
         for b in b_answers:
-            if a.question_id == b.question_id:
+            print('b:', b)
+            if a.question.id == b.question.id:
                 num_question += 1
                 a_pref = a.other_user_answer
-                b_answers = b.user_answer
-                if a_pref == b_answers:
+                b_answer = b.user_answer
+                if a_pref == b_answer:
                     '''
                     a give point to b according to the importance level of a
                     '''
@@ -33,3 +36,11 @@ def get_match(user_a, user_b):
     if percent == 0:
         percent = 0.000001
     return percent, num_question
+
+
+def get_users_match(user_a, user_b):
+    a = get_points(user_a, user_b)
+    b = get_points(user_b, user_a)
+    number_of_question = b[1]
+    match_decimal = (Decimal(a[0] * Decimal(b[0])) ** (1/Decimal(b[1])))
+    return match_decimal, number_of_question

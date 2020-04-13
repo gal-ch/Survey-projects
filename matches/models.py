@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from .utils import get_users_match
 
 
 class MatchManager(models.Manager):
@@ -18,6 +19,12 @@ class MatchManager(models.Manager):
             return obj_2, False
         else:
             new_instance = self.create(user_a=user_a, user_b=user_b)
+            match_decimal, questions_answered = get_users_match(user_a, user_b)
+            new_instance.match_decimal = match_decimal
+            new_instance.questions_answered = questions_answered
+            new_instance.save()
+            return new_instance, True
+
             # need to: add match && save new_instance && return new_instance, True
 
 
