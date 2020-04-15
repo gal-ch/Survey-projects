@@ -104,11 +104,11 @@ class Profile(models.Model):
     picture = models.ImageField(upload_to=upload_location, null=True, blank=True)
 
 
-def update_user_has_profile(sender, instance, *args, **kwargs):
-    user_admin = MyUser.objects.get(pk=instance.user_id)
-    user_admin.hasProfile = True
-
-pre_save.connect(update_user_has_profile, sender=Profile)
+# def update_user_has_profile(sender, instance, *args, **kwargs):
+#     user_admin = MyUser.objects.get(email=instance.user)
+#     user_admin.hasProfile = True
+#
+# pre_save.connect(update_user_has_profile, sender=Profile)
 
 
 

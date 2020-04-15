@@ -43,25 +43,6 @@ class SignUpView(View):
         return render(request, self.template_name, {'form': form})
 
 
-class ProfileUpdateView(CreateView):
-    model = Profile
-    form_class = ProfileForm
-    template_name = 'accounts/profile.html'
-
-    def dispatch(self, request, *args, **kwargs):
-        user_admin = MyUser.objects.get(email=request.user)
-        print(user_admin.hasProfile)
-        profile = user_admin.hasProfile
-        if profile:
-            return redirect(reverse('home'))
-        return super(ProfileUpdateView, self).dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        new_profile = form.save()
-        return redirect(reverse('accounts:profile-detail', kwargs={'pk': new_profile.pk}))
-
-
 class ProfileDetailView(DetailView):
     model = Profile
     template_name = 'accounts/profile_detail.html'
@@ -78,6 +59,33 @@ class ProfileDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(ProfileDetailView, self).get_context_data(**kwargs)
         return context
+
+
+class ProfileCreateView(CreateView):
+    model = Profile
+    form_class = ProfileForm
+    template_name = 'accounts/profile.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        user_admin = MyUser.objects.get(email=request.user)
+        print(user_admin.hasProfile)
+        profile = user_admin.hasProfile
+        if profile:
+            return redirect(reverse('home'))
+        return super(ProfileCreateView, self).dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        user_admin = MyUser.objects.get(email=request.user)
+        if form.is_valid():
+            self.new_profile = form.save(commit=False)
+            form.instance.user_id = self.request.user.pk
+            self.new_profile = form.save()
+            user_admin.hasProfile = True
+            user_admin.save()
+            return HttpResponseRedirect(reverse('accounts:profile-detail', kwargs={'pk': self.new_profile.id}))
+        else:
+            return redirect(reverse('home'))
 
 
 class ProfileUpdate(UpdateView):
