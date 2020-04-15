@@ -1,38 +1,41 @@
 from django import forms
-from questions.models import LEVELS, Answer, Question
+from django.forms import ModelForm
+
+from questions.models import LEVELS, Answer, Question, UserAnswer
 
 
-class UserResponseForm(forms.Form):
-    question_id = forms.IntegerField()
-    answer_id = forms.IntegerField()
+class UserResponseForm(forms.ModelForm):
     user_importance_level = forms.ChoiceField(choices=LEVELS)
-    other_user_answer_id = forms.IntegerField()
     other_user_importance_level = forms.ChoiceField(choices=LEVELS)
+    user_answer = forms.ModelChoiceField(
+        required=True,
+        widget=forms.RadioSelect(),
+        queryset=None,
+        # initial=None,
+    )
 
-    def clean_question_id(self):
-        question_id = self.cleaned_data.get('question_id')
-        print('question_id-form', question_id)
-        try:
-            obj = Question.objects.get(id=question_id)
-        except:
-            raise forms.ValidationError('It Same to have some problem with your question, please try again, thanks')
-        return question_id
+    other_user_answer = forms.ModelChoiceField(
+        required=True,
+        widget=forms.RadioSelect(),
+        queryset=None,
+        # initial=None,
+    )
 
-    def clean_answer_id(self):
-        answer_id = self.cleaned_data.get('answer_id')
-        try:
-            obj = Answer.objects.get(id=answer_id)
-        except:
-            raise forms.ValidationError('It Same to have some problem with your answer, please try again, thanks')
-        return answer_id
+    class Meta:
+        model = UserAnswer
+        fields = ('user_answer', 'user_importance_level',
+                  'other_user_answer','other_user_importance_level')
 
-    def clean_other_user_answer_id(self):
-        other_user_answer_id = self.cleaned_data.get('other_user_answer_id')
-        try:
-            obj = Answer.objects.get(id=other_user_answer_id)
-        except:
-            raise forms.ValidationError('It Same to have some problem with the other user answer, please try again, thanks')
-        return other_user_answer_id
+    def __init__(self, initial=None, *args, **kwargs,):
+        super(UserResponseForm, self).__init__(*args, **kwargs)
+        if initial:
+            self.fields['user_answer'].queryset = Answer.objects.filter(question_id=initial['pk'])
+            self.fields['other_user_answer'].queryset = Answer.objects.filter(question_id=initial['pk'])
+
+
+
+
+
 
 
 
