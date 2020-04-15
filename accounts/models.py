@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import (
@@ -56,12 +56,12 @@ class MyUser(AbstractBaseUser):
         unique=True,
     )
     username = models.CharField(max_length=50, null=True)
-    date_of_birth = models.DateField(null=True)
+    # date_of_birth = models.DateField(null=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    bio = models.TextField(max_length=500)
-    gender = models.IntegerField(choices=GENDER_CHOICES, default=2)
-    city = models.CharField(max_length=50)
+    # bio = models.TextField(max_length=500)
+    # gender = models.IntegerField(choices=GENDER_CHOICES, default=2)
+    # city = models.CharField(max_length=50)
     hasProfile = models.BooleanField(default=False)
     # avatar = models.ImageField(blank=True, upload_to=generate_new_filename, default="avatar/default.jpg")
 
@@ -88,6 +88,29 @@ class MyUser(AbstractBaseUser):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
+
+
+def upload_location(instance, filename):
+    location= str(instance.user.username)
+    return '%s/%s'%(location, filename)
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(MyUser, on_delete=models.CASCADE)
+    age = models.IntegerField()
+    bio = models.TextField(max_length=500)
+    gender = models.IntegerField(choices=GENDER_CHOICES, default=2)
+    city = models.CharField(max_length=50)
+    picture = models.ImageField(upload_to=upload_location, null=True, blank=True)
+
+
+def update_user_has_profile(sender, instance, *args, **kwargs):
+    user_admin = MyUser.objects.get(pk=instance.user_id)
+    user_admin.hasProfile = True
+
+pre_save.connect(update_user_has_profile, sender=Profile)
+
+
 
 
 

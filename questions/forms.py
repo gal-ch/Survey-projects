@@ -23,7 +23,7 @@ class UserResponseForm(ModelForm):
     class Meta:
         model = UserAnswer
         fields = ('user_answer', 'user_importance_level',
-                  'other_user_answer','other_user_importance_level')
+                  'other_user_answer', 'other_user_importance_level')
 
     def __init__(self, initial=None, *args, **kwargs,):
         super(UserResponseForm, self).__init__(*args, **kwargs)

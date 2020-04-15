@@ -1,11 +1,11 @@
+
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from accounts.models import MyUser
+from accounts.models import MyUser, Profile
 
 
 class SignUpForm(UserCreationForm):
-    # first_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
-    # last_name = forms.CharField(max_length=30, required=False, help_text='Optional.')
     email = forms.EmailField(max_length=254, help_text='Required. Inform a valid email address.')
 
     class Meta:
@@ -16,5 +16,5 @@ class SignUpForm(UserCreationForm):
 class ProfileForm(forms.ModelForm):
     # date_of_birth = forms.DateField(input_formats=['%d/%m/%Y %H:%M'])
     class Meta:
-        model = MyUser
-        fields = ('email', 'city', 'date_of_birth',  'bio', 'username', 'gender')
+        model = Profile
+        fields = ['age', 'bio', 'gender', 'picture']
