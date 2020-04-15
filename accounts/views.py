@@ -80,6 +80,26 @@ class ProfileDetailView(DetailView):
         return context
 
 
+class ProfileUpdate(UpdateView):
+        model = Profile
+        form_class = ProfileForm
+        template_name = 'accounts/profile.html'
+
+        def dispatch(self, request, *args, **kwargs):
+            obj = self.get_object()
+            if request.user == obj.user:
+                return super(ProfileUpdate, self).dispatch(request, *args, **kwargs)
+            return redirect(reverse('home'))
+
+        def post(self, request, *args, **kwargs):
+            self.object = self.get_object()
+            form = self.get_form()
+            if not form.is_valid():
+                return self.get(request, self.object.pk)
+            form.save()
+            return redirect(reverse('home'))
+
+
 
 
     # def dispatch(self, request, *args, **kwargs):

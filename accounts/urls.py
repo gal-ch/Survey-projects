@@ -5,7 +5,7 @@ from accounts.views import (
     # ActivateAccount,
     ProfileUpdateView,
     HomePageView,
-    ProfileDetailView)
+    ProfileDetailView, ProfileUpdate)
 
 
 app_name = 'accounts'
@@ -15,7 +15,9 @@ urlpatterns = [
     # path('signup/', SignUpView.as_view(), name='signup'),
     path('profile-create/', ProfileUpdateView.as_view(), name='profile-create'),
     path('profile-detail/<int:pk>/', ProfileDetailView.as_view(), name='profile-detail'),
+    path('profile-update/<int:pk>/', ProfileUpdate.as_view(), name='profile-update'),
     # path('activate/<uidb64>/<token>/', ActivateAccount.as_view(), name='activate'),
+
 
 ]
 
