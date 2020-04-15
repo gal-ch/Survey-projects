@@ -36,6 +36,11 @@ class QuestionDetailView(FormMixin, DetailView):
     def get_initial(self, *args, **kwargs):
         initial = super(QuestionDetailView, self).get_initial()
         initial['pk'] = self.get_object().pk
+        if UserAnswer.objects.filter(user=self.request.user, question=self.object):
+            initial = {
+              'pk': self.get_object().pk,
+              'data': UserAnswer.objects.filter(user=self.request.user, question=self.object).first(),
+            }
         self.form_class(initial)
         return initial
 
