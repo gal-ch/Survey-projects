@@ -27,6 +27,7 @@ class MatchesList(ListView):
     template_name = 'accounts/matches_list.html'
 
     def get_queryset(self):
+
         log_user = self.request.user
         queryset_not_filter = Match.objects.matches_all(self.request.user).order_by('-match_decimal')
         queryset = []

@@ -1,12 +1,13 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.urls import reverse
-from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
+
+
+
 
 class MyUserManager(BaseUserManager):
     def create_user(self, email,  password=None):
@@ -25,7 +26,6 @@ class MyUserManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
-
 
     def create_superuser(self, email, password):
         """
@@ -110,6 +110,26 @@ class Profile(models.Model):
         return reverse("accounts:profile-detail", kwargs={'pk': self.id})
 
 
+class UserJob(models.Model):
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+    position = models.CharField(max_length=220)
+    location = models.CharField(max_length=220)
+    employer_name = models.CharField(max_length=220)
+
+    def __str__(self):
+        return self.position
+
+
+# def post_save_user_job(sender, instance, created, *args, **kwargs):
+#     job = instance.position.lower()
+#     location = instance.location.lower()
+#     employer_name = instance.employer_name.lower()
+#     new_job = Job.objects.get_or_create(text=job)
+#     new_location, created = Location.objects.get_or_create(name=location)
+#     new_employer = Employer.objects.get_or_create(location=new_location, name=employer_name)
+#
+#
+# post_save.connect(post_save_user_job, sender=UserJob)
 
 
 

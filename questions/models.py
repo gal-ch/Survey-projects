@@ -1,9 +1,6 @@
-from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.signals import post_save, pre_save
 from accounts.models import MyUser, Profile
-
-User = get_user_model()
 
 
 class Question(models.Model):
@@ -36,7 +33,7 @@ LEVELS = (
 
 
 class UserAnswer(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     user_answer = models.ForeignKey(Answer, related_name='user_answer', on_delete=models.CASCADE)
     user_importance_level = models.CharField(max_length=50, choices=LEVELS)
