@@ -43,12 +43,15 @@ INSTALLED_APPS = [
     'questions.apps.QuestionsConfig',
     'accounts',
     'matches',
+    'occupation',
 
     'six',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
+    'datetimepicker',
+
 ]
 
 MIDDLEWARE = [
@@ -146,16 +149,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_in_env", "static_root")
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static_in_pro", "our_static"),
-    # os.path.join(BASE_DIR, "static_in_env"),
-    # '/var/www/static/',
-)
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR),"media_root")
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "media_root")
 
 AUTH_USER_MODEL = 'accounts.MyUser'
 

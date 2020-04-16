@@ -33,6 +33,7 @@ class MatchesList(ListView):
         for match in queryset_not_filter:
             if match.user_a == log_user and match.user_b != log_user:
                 match_to_list = [match.user_b, match.get_percent]
+                print('cccc', match.match_decimal)
                 queryset.append(match_to_list)
             if match.user_b == log_user and match.user_a != log_user:
                 match_to_list = [match.user_a, match.get_percent]
