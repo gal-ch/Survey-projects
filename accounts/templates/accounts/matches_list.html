@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}home{% endblock %}
+{% block content %}
+
+{% for match_user, percent in object_list %}
+    <div>
+    <h2>{{ match_user.username }}</h2>
+
+    <img src='{{ match_user.profile.picture.url }}' alt='{{ match_user.username}}' class="img-responsive" width="200" height="200"/>
+
+    <h2>{{ percent }}</h2>
+    {% endfor %}
+</div>
+{% endblock %}

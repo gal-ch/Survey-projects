@@ -4,11 +4,12 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
-from django.views.generic import View, UpdateView, TemplateView, DetailView, CreateView
+from django.views.generic import View, UpdateView, TemplateView, DetailView, CreateView, ListView
 from matches.models import Match
 from .forms import SignUpForm, ProfileForm
 from .models import MyUser, Profile
 User = get_user_model()
+
 
 class LoginRequireMixin(object):
     @method_decorator(login_required)
@@ -20,6 +21,27 @@ class LoginRequireMixin(object):
 
 class HomePageView(TemplateView):
     template_name = 'home.html'
+
+
+class MatchesList(ListView):
+    template_name = 'accounts/matches_list.html'
+
+    def get_queryset(self):
+        log_user = self.request.user
+        queryset_not_filter = Match.objects.matches_all(self.request.user).order_by('-match_decimal')
+        queryset = []
+        for match in queryset_not_filter:
+            if match.user_a == log_user and match.user_b != log_user:
+                match_to_list = [match.user_b, match.get_percent]
+                queryset.append(match_to_list)
+            if match.user_b == log_user and match.user_a != log_user:
+                match_to_list = [match.user_a, match.get_percent]
+                queryset.append(match_to_list)
+            else:
+                pass
+        return queryset
+
+
 
 
 # Sign Up View

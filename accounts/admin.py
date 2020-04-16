@@ -5,10 +5,10 @@ from accounts.models import MyUser, Profile
 
 
 class UserAdmin(BaseUserAdmin):
-    list_display = ('email','username', 'is_admin', 'hasProfile')
+    list_display = ('email', 'username', 'is_admin', 'hasProfile')
     list_filter = ('is_admin',)
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
+        (None, {'fields': ('email', 'password', 'username')}),
         ('Personal info', {'fields': ('hasProfile',)}),
         ('Permissions', {'fields': ('is_admin',)}),
     )
