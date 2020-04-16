@@ -1,13 +1,14 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import View, UpdateView, TemplateView, DetailView, CreateView
+from matches.models import Match
 from .forms import SignUpForm, ProfileForm
 from .models import MyUser, Profile
-
+User = get_user_model()
 
 class LoginRequireMixin(object):
     @method_decorator(login_required)
@@ -58,6 +59,12 @@ class ProfileDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ProfileDetailView, self).get_context_data(**kwargs)
+        profile_pk = self.get_object().pk
+        user_profile = get_object_or_404(Profile, id=profile_pk)
+        user_instance = get_object_or_404(User, email=user_profile)
+        login_user = get_object_or_404(User, email=self.request.user)
+        match, match_created = Match.objects.get_or_create_match(user_a=user_instance, user_b=login_user)
+        context['match'] = match
         return context
 
 
@@ -107,6 +114,17 @@ class ProfileUpdate(UpdateView):
             form.save()
             return redirect(reverse('home'))
 
+
+# def profile_match(request, pk_profile):
+#     user_of_profile = get_object_or_404(Profile, id=pk_profile)
+#     profile_userinst = get_object_or_404(User, email=user_of_profile)
+#     connect_user = get_object_or_404(User, email=request.user)
+#     match, match_created= Match.objects.get_or_create_match(user_a=profile_userinst, user_b=connect_user)
+#     context = {
+#         "match": match
+#     }
+#     a = context['match']
+#     print(context['match'].get_percent)
 
 
 

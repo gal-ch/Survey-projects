@@ -36,7 +36,7 @@ LEVELS = (
 
 
 class UserAnswer(models.Model):
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     user_answer = models.ForeignKey(Answer, related_name='user_answer', on_delete=models.CASCADE)
     user_importance_level = models.CharField(max_length=50, choices=LEVELS)

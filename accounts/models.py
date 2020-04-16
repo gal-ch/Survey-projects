@@ -103,12 +103,8 @@ class Profile(models.Model):
     city = models.CharField(max_length=50)
     picture = models.ImageField(upload_to=upload_location, null=True, blank=True)
 
-
-# def update_user_has_profile(sender, instance, *args, **kwargs):
-#     user_admin = MyUser.objects.get(email=instance.user)
-#     user_admin.hasProfile = True
-#
-# pre_save.connect(update_user_has_profile, sender=Profile)
+    def __str__(self):
+        return self.user.email
 
 
 

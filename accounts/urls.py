@@ -1,5 +1,7 @@
 from django.conf.urls import url
 from django.urls import path
+
+from accounts import views
 from accounts.views import (
     SignUpView,
     # ActivateAccount,
@@ -16,8 +18,6 @@ urlpatterns = [
     path('profile-create/', ProfileCreateView.as_view(), name='profile-create'),
     path('profile-detail/<int:pk>/', ProfileDetailView.as_view(), name='profile-detail'),
     path('profile-update/<int:pk>/', ProfileUpdate.as_view(), name='profile-update'),
-    # path('activate/<uidb64>/<token>/', ActivateAccount.as_view(), name='activate'),
-
 
 ]
 
