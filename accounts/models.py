@@ -1,12 +1,8 @@
 from django.db import models
-from django.db.models.signals import post_save, pre_save
-from django.dispatch import receiver
 from django.urls import reverse
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
-
-
 
 
 class MyUserManager(BaseUserManager):
@@ -120,16 +116,6 @@ class UserJob(models.Model):
         return self.position
 
 
-# def post_save_user_job(sender, instance, created, *args, **kwargs):
-#     job = instance.position.lower()
-#     location = instance.location.lower()
-#     employer_name = instance.employer_name.lower()
-#     new_job = Job.objects.get_or_create(text=job)
-#     new_location, created = Location.objects.get_or_create(name=location)
-#     new_employer = Employer.objects.get_or_create(location=new_location, name=employer_name)
-#
-#
-# post_save.connect(post_save_user_job, sender=UserJob)
 
 
 

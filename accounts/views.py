@@ -6,8 +6,8 @@ from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import View, UpdateView, TemplateView, DetailView, CreateView, ListView
 from matches.models import Match
-from .forms import SignUpForm, ProfileForm
-from .models import MyUser, Profile
+from .forms import SignUpForm, ProfileForm, JobForm, JobFormset
+from .models import MyUser, Profile, UserJob
 User = get_user_model()
 
 
@@ -27,14 +27,13 @@ class MatchesList(ListView):
     template_name = 'accounts/matches_list.html'
 
     def get_queryset(self):
-
+        ''' list view that show the user matches '''
         log_user = self.request.user
         queryset_not_filter = Match.objects.matches_all(self.request.user).order_by('-match_decimal')
         queryset = []
         for match in queryset_not_filter:
             if match.user_a == log_user and match.user_b != log_user:
                 match_to_list = [match.user_b, match.get_percent]
-                print('cccc', match.match_decimal)
                 queryset.append(match_to_list)
             if match.user_b == log_user and match.user_a != log_user:
                 match_to_list = [match.user_a, match.get_percent]
@@ -44,9 +43,7 @@ class MatchesList(ListView):
         return queryset
 
 
-
-
-# Sign Up View
+# Sign Up View # not active
 class SignUpView(View):
     form_class = SignUpForm
     template_name = 'accounts/signup.html'
@@ -83,12 +80,16 @@ class ProfileDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ProfileDetailView, self).get_context_data(**kwargs)
-        profile_pk = self.get_object().pk
-        user_profile = get_object_or_404(Profile, id=profile_pk)
+        profile = self.get_object()
+        user_profile = get_object_or_404(Profile, id=profile.pk)
         user_instance = get_object_or_404(User, email=user_profile)
         login_user = get_object_or_404(User, email=self.request.user)
+        # display user match in context to the connected user
         match, match_created = Match.objects.get_or_create_match(user_a=user_instance, user_b=login_user)
         context['match'] = match
+        # get user jobs info
+        # jobs = UserJob.objects.get(user=profile.user_id)
+        # context['jobs'] = jobs
         return context
 
 
@@ -139,37 +140,26 @@ class ProfileUpdate(UpdateView):
             return redirect(reverse('home'))
 
 
-# def profile_match(request, pk_profile):
-#     user_of_profile = get_object_or_404(Profile, id=pk_profile)
-#     profile_userinst = get_object_or_404(User, email=user_of_profile)
-#     connect_user = get_object_or_404(User, email=request.user)
-#     match, match_created= Match.objects.get_or_create_match(user_a=profile_userinst, user_b=connect_user)
-#     context = {
-#         "match": match
-#     }
-#     a = context['match']
-#     print(context['match'].get_percent)
+class JobCreateView(CreateView):
+    model = UserJob
+    form_class = JobForm
+    template_name = 'accounts/job_form.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(JobCreateView, self).get_context_data(**kwargs)
+        context['formset'] = JobFormset(queryset=UserJob.objects.filter(user=self.request.user))
+        return context
 
+    def post(self, request, *args, **kwargs):
+        formset = JobFormset(request.POST)
+        if formset.is_valid():
+            return self.form_valid(formset)
 
-    # def dispatch(self, request, *args, **kwargs):
-    #     user_admin = MyUser.objects.get(email=request.user)
-    #     profile = user_admin.hasProfile
-    #     if profile == False:
-    #         return super(ProfileUpdateView, self).dispatch(request, *args, **kwargs)
-    #     return redirect(reverse('home'))
-    #
-    # def get_success_url(self, **kwargs):
-    #     print(self.object.pk)
-    #     if kwargs != None:
-    #         return reverse_lazy('accounts:profile-detail', kwargs={'pk': self.object.pk})
-    #
-    # def form_valid(self, form):
-    #     form = self.get_form()
-    #     if not form.is_valid():
-    #         return self.get(self.object.pk)
-    #     form.instance.user = self.request.user
-    #     print(form.instance.user)
-    #     form.save()
-    #     return HttpResponseRedirect(self.get_success_url())
-        # self.success_url = reverse('accounts:profile-detail', kwargs={'pk': self.request.user.pk})
+    def form_valid(self, formset):
+        user_profile = Profile.objects.get(user_id=self.request.user.pk)
+        instances = formset.save(commit=False)
+        for instance in instances:
+            instance.user = self.request.user
+            instance.save()
+        return HttpResponseRedirect(reverse('accounts:profile-detail', kwargs={'pk': user_profile.id}))
+
