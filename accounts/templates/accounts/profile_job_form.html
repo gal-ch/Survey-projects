@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+
+<form method="post" >
+    {% csrf_token %}
+    {{ form|crispy }}
+     <br>
+     <hr/>
+     <br>
+    {{ job_form.management_form }}
+        {% for form in job_form %}
+        {{ form|crispy }}
+            <br/>
+            <hr/>
+            <br/>
+        {% endfor %}
+   <button type="submit">update</button>
+</form>
+
+{% endblock content %}
+

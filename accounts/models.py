@@ -92,22 +92,22 @@ def upload_location(instance, filename):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(MyUser, on_delete=models.CASCADE)
+    user = models.OneToOneField(MyUser, on_delete=models.CASCADE, primary_key=True)
     age = models.IntegerField()
     bio = models.TextField(max_length=500)
     gender = models.IntegerField(choices=GENDER_CHOICES, default=2)
     city = models.CharField(max_length=50)
     picture = models.ImageField(upload_to=upload_location, null=True, blank=True)
 
-    def __str__(self):
-        return self.user.email
+    # def __str__(self):
+    #     return self.user
 
     def get_absolute_url(self):
-        return reverse("accounts:profile-detail", kwargs={'pk': self.id})
+        return reverse("accounts:profile-detail", kwargs={'pk': self.user_id})
 
 
 class UserJob(models.Model):
-    user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE)
     position = models.CharField(max_length=220)
     location = models.CharField(max_length=220)
     employer_name = models.CharField(max_length=220)
