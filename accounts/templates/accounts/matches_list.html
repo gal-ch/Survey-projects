@@ -32,13 +32,12 @@ h4, h3{
 {% endblock %}
 {% block content %}
     <div class="match-list" >
-{% for match_user, percent in object_list %}
+    {% for match_user,percent in object_list %}
     <div class="match-item">
-    <a href="{{ match_user.profile.get_absolute_url }}"><h4>{{ match_user.username }}</h4></a>
-    <img class="img-item" src='{{ match_user.profile.picture.url }}' alt='{{ match_user.username}}' />
+    <a href="{{ match_user.profile.get_absolute_url }}"><h4>{{ match_user.email }}</h4></a>
     <h4>{{ percent }}</h4>
+{#    <img class="img-item" src='{{ match_user.profile.picture.url }}' alt='{{ match_user.username}}' />#}
     </div>
     {% endfor %}
-
     </div>
 {% endblock %}

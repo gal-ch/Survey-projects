@@ -15,13 +15,14 @@ class MatchQuerySet(models.query.QuerySet):
         return self.filter(active=True)
 
     def matches(self, user):
-        q1 = self.filter(user_a=user)
-        q2 = self.filter(user_b=user)
+        q1 = self.filter(user_a=user).exclude(user_b=user)
+        q2 = self.filter(user_b=user).exclude(user_a=user)
         return (q1 | q2).distinct()
 
 
 class MatchManager(models.Manager):
     def get_queryset(self):
+
         return MatchQuerySet(self.model, using=self._db)
 
     def get_or_create_match(self, user_a=None, user_b=None):
@@ -47,7 +48,7 @@ class MatchManager(models.Manager):
     def update_all(self):
         queryset = self.all()
         now = timezone.now()
-        offset = now - datetime.timedelta(hours=12)
+        offset = now - datetime.timedelta(seconds=12)
         offset2 = now - datetime.timedelta(hours=36)
         queryset.filter(updated__gt=offset2).filter(updated__lte=offset)
         if queryset.count > 0:
@@ -56,6 +57,40 @@ class MatchManager(models.Manager):
 
     def matches_all(self, user):
         return self.get_queryset().matches(user)
+
+    def get_matches(self, user):
+        qs = self.get_queryset().matches(user)
+        print('qs', qs)
+        matches = []
+        for match in qs:
+            print(match.user_b)
+            print(user)
+            if match.user_a == user:
+                print('match_user_a')
+                match_to_list = [match.user_b]
+                matches.append(match_to_list)
+            elif match.user_b == user:
+                print('match_user_b')
+                match_to_list = [match.user_a]
+                matches.append(match_to_list)
+            else:
+                pass
+        print('matches', matches)
+        return matches
+
+    def get_percent_matches(self,user):
+        qs = self.get_queryset().matches(user).order_by('-match_decimal')
+        matches = []
+        for match in qs:
+            if match.user_a == user:
+                match_to_list = [match.user_b, match.get_percent]
+                matches.append(match_to_list)
+            elif match.user_b == user:
+                match_to_list = [match.user_a, match.get_percent]
+                matches.append(match_to_list)
+            else:
+                pass
+        return matches
 
 
 class Match(models.Model):
@@ -73,7 +108,6 @@ class Match(models.Model):
 
     @property
     def get_percent(self):
-
         new_decimal = self.match_decimal * Decimal(100)
         return "%.2f%%" % (new_decimal)
 
@@ -87,11 +121,10 @@ class Match(models.Model):
 
     def check_update(self):
         now = timezone.now()
-        offset = now - datetime.timedelta(hours=12)  # 12 hours ago
-        if self.updated <= offset:
-            self.do_match()
-        else:
-            print("already updated")
+        offset = now - datetime.timedelta(seconds=12)  # 12 hours ago
+        self.do_match()
+        # else:
+        #     print("already updated")
 
 
 

@@ -28,20 +28,9 @@ class MatchesList(ListView):
     template_name = 'accounts/matches_list.html'
 
     def get_queryset(self):
+        matches = Match.objects.get_percent_matches(self.request.user)
         ''' list view that show the user matches '''
-        log_user = self.request.user
-        queryset_not_filter = Match.objects.matches_all(self.request.user).order_by('-match_decimal')
-        queryset = []
-        for match in queryset_not_filter:
-            if match.user_a == log_user and match.user_b != log_user:
-                match_to_list = [match.user_b, match.get_percent]
-                queryset.append(match_to_list)
-            if match.user_b == log_user and match.user_a != log_user:
-                match_to_list = [match.user_a, match.get_percent]
-                queryset.append(match_to_list)
-            else:
-                pass
-        return queryset
+        return matches
 
 
 # Sign Up View # not active
@@ -90,6 +79,7 @@ class ProfileDetail(DetailView):
         # display user match in context to the connected user
         match, match_created = Match.objects.get_or_create_match(user_a=user_instance, user_b=login_user)
         context['match'] = match
+        print(context['match'])
         # get user jobs info
         jobs = UserJob.objects.filter(user=profile.user_id)
         context['jobs'] = jobs

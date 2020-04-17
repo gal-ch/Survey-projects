@@ -1,7 +1,17 @@
 {% extends 'base.html' %}
-{% block title %}home{% endblock %}
+{% block title %}Profile{% endblock %}
 {% block content %}
-  <h2>profile detail</h2>
+
+        {% if request.user == object.user %}
+        <div class="profile-btn">
+            <a href="{% url 'accounts:profile-update' object.user_id %}" class="btn btn-primary btn-lg active" role="button"
+               aria-pressed="true">Edit Profile</a>
+            <a href="#" class="btn btn-primary btn-lg active" role="button"
+               aria-pressed="true">Your Message</a>
+        </div>
+        {% endif %}
+
+
 {#    <img src='{{ object.user.profile.picture.url }}' alt='{{ match_user.username}}'#}
 {#           width="200" height="200"/>#}
     <h2>name: {{ object.user.username }}</h2>
